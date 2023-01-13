@@ -1,0 +1,38 @@
+# Count lenght with a python script
+python length.py './Malus_domestica_golden.ASM211411v1.pep.all.fa' > lengths.txt
+
+# Sorting
+
+## SOrt with first column
+sort -t \t -k 1 blastp.txt > blastp.sorted.txt
+
+## Sort with second column
+sort -t \t -k 2 lengths.txt > lengths.sorted.txt
+
+# Join two files
+join -1 2 -2 1 lengths.sorted.txt blastp.sorted.txt  -o 2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,2.10,2.11,2.12,1.1 > blastp.filtred.txt
+
+# Join id 2
+sort -t \t -k 2 blastp.filtred.txt > blastp.filtred2.txt
+join -1 2 -2 2 lengths.sorted.txt blastp.filtred2.txt  -o 2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,2.10,2.11,2.12,2.13,1.1 > blastp.filtred
+
+# Compute coverage
+awk '{print $0, couv1=($8-$7+1)/$13, couv2=($10-$9+ 1)/$14}' blastp.filtred > blastfinal.txt
+
+# Filtering identity / coverage = 30 / 50 
+awk '$3>=30 && $13>= 0.5 && $14 >=0.5' blastfinal > blastfinal3050
+# Filtring columns 
+awk 'BEGIN{OFS= "\t"; print "geneIDA", "geneIDB", "bitScore"} {print $1, $2, $12} ' blastfinal3050 > filtred_3050
+
+# Filtering identity / coverage = 30 / 30 
+awk '$3>=30 && $13>= 0.5 && $14 >=0.5' blastfinal > blastfinal3030
+# Filtring columns 
+awk 'BEGIN{OFS= "\t"; print "geneIDA", "geneIDB", "bitScore"} {print $1, $2, $12} ' blastfinal3030 > filtred_3030
+
+# Filtering identity / coverage = 30 / 40 
+awk '$3>=30 && $13>= 0.5 && $14 >=0.5' blastfinal > blastfinal3040
+# Filtring columns 
+awk 'BEGIN{OFS= "\t"; print "geneIDA", "geneIDB", "bitScore"} {print $1, $2, $12} ' blastfinal3040 > filtred_3040
+
+#### TRAITEMENT GALAXY
+#### output >> MCS.tsv
